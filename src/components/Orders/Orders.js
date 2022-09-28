@@ -6,10 +6,10 @@ const Orders = props => {
     return (
       <div className="order" key={order.name}>
 
-        <h3>{order.name}</h3>
+        <h3 className='order-name'>{order.name}</h3>
         <ul className="ingredient-list">
           {order.ingredients.map(ingredient => {
-            return <li key={ingredient}>{ingredient}</li>
+            return <li className='ingredients' key={ingredient}>{ingredient}</li>
           })}
         </ul>
       </div>

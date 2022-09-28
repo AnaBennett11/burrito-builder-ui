@@ -5,21 +5,38 @@ describe('App', () => {
     })
     .as('orders')
     cy.visit('http://localhost:3000')
-    .wait('@orders')
-    .its("response.body")
-    .should("have.length", 3)
+
   });
-  it('should take the user to the main page', () => {
-   cy.get('form').should('have.length', 1)
-     .get('input').should('have.length', 1)
-     .get('button').should('have.length',13)
-  })
-  it("should render burrito form", () => {
-    cy.get("form").should("contain", "Submit Order");
-    cy.get("form").should("contain", "lettuce");
-    cy.get("form").should("contain", "Nothing selected");
-    cy.get("button").should("have.length", 13);
-  });
+ 
+  it('should render an order form', () => { 
+  cy.get("form")
+    .should("exist")
+    .get("input")
+    .get(".ingredient-buttons")
+    .should("have.length", 12)
+    .should("contain", "steak")
+    .get("p")
+    .should("contain", "Order:")
+    .get("h4")
+    .should(
+      "contain",
+      "Please enter a name and select at least one ingredient for your burrito!")
+    });
+
+  it('should show the stub data on page load', () => {
+    cy.wait("@orders")
+      .get(".order")
+      .should("exist")
+      .should("have.length", 1)
+      .get(".order-name")
+      .should("contain", "Pat")
+      .get(".ingredients")
+      .should("contain", 
+        "beans",
+      );
+    })
+ 
+
 
   it("should be able to place an order", () => {
     cy.intercept("POST", "http://localhost:3001/api/v1/orders").as("order");
@@ -27,28 +44,12 @@ describe('App', () => {
     cy.get('input[type="text"]').type("Ana");
     cy.get("button").first().click();
     cy.get("p").should("contain", "Order: beans");
-    cy.get(".submitButton").click();
+    cy.get(".submit-button").click();
     cy.wait("@order").then(({ response }) => {
       expect(response.statusCode).to.eq(201);
       expect(response.body.name).to.eq("Ana");
       expect(response.body.ingredients).to.deep.eq(["beans"]);
     });
   })
-  // it("should be able to save new idea as successful post", () => {
-  //   cy.get('form')
-  //     .get('input').should('have.length', 1).should('have.attr', "name")
-  //     .get(".submitButton").click()
-  //     .intercept("POST",'http://localhost:3001/api/v1/orders', {
-  //       headers: { 'Content-Type': 'application/json' },
-  //       statusCode: 201,
-  //       body: { fixture: "sampleData.json"}
-  //     })
-  //     .intercept("GET", "http://localhost:3001/api/v1/orders", {
-  //       statusCode: 200,
-  //       fixture: "sampleData.json"
-  //     })
-  //     .as("orders")
-  //     .wait('@orders')
-  //     .its("response.body")
-  // })
+
 })
